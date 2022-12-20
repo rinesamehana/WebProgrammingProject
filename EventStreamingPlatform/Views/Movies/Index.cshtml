@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EventStreamingPlatform.Models.Movie>
+﻿@model PaginatedList<EventStreamingPlatform.Models.Movie>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,13 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                Description
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
+                CreatedDate
             </th>
             <th></th>
         </tr>
@@ -45,3 +45,19 @@
 }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.PreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.NextPage ? "disabled" : "";
+} 
+
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex-1)"
+   class="btn btn-default @prevDisabled">
+   Previous
+</a>    
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex+1)"
+   class="btn btn-default @nextDisabled">
+  Next
+</a>  

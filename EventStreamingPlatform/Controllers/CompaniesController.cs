@@ -23,11 +23,13 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Companies
-        public async Task<IActionResult> Index(int page=1)
+        public async Task<IActionResult> Index(int pageNumber=1)
         {
-            var item = _context.Company.AsNoTracking().OrderBy(p => p.Id);
-            var model = await PagingList<Company>.CreateAsync(item, 3, page);
-            return View(model);
+            return View(await PaginatedList<Company>.CreateAsync(_context.Company, pageNumber, 3));
+
+            //var item = _context.Company.AsNoTracking().OrderBy(p => p.Id);
+            //var model = await PagingList<Company>.CreateAsync(item, 3, page);
+            //return View(model);
 
             //return View(await _context.Company.ToListAsync());
         }

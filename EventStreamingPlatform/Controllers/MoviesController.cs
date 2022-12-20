@@ -20,9 +20,11 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber=1)
         {
-              return View(await _context.Movie.ToListAsync());
+
+            return View(await PaginatedList<Movie>.CreateAsync(_context.Movie, pageNumber, 3));
+            //return View(await _context.Movie.ToListAsync());
         }
 
         // GET: Movies/Details/5
