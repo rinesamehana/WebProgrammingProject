@@ -1,8 +1,7 @@
 ﻿
 
-@model ReflectionIT.Mvc.Paging.PagingList<EventStreamingPlatform.Models.Actor>
-@using ReflectionIT.Mvc.Paging
-@addTagHelper *, ReflectionIT.Mvc.Paging
+@model PaginatedList<EventStreamingPlatform.Models.Actor>
+
 
 @{
     ViewData["Title"] = "Index";
@@ -10,9 +9,7 @@
 
 <h1>Index</h1>
 
-   <nav>
-        @await this.Component.InvokeAsync("Pager", new { pagingList = this.Model})
-   </nav>
+ 
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -21,10 +18,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Surname)
+                Surname
             </th>
             <th></th>
         </tr>
@@ -48,6 +45,18 @@
     </tbody>
 </table>
 
-        <nav>
-           <vc:pager paging-list="@Model"/>
-       </nav>
+@{
+    var prevDisabled = !Model.PreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.NextPage ? "disabled" : "";
+} 
+
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex-1)"
+   class="btn btn-default @prevDisabled">
+   Previous
+</a>    
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex+1)"
+   class="btn btn-default @nextDisabled">
+  Next
+</a>  

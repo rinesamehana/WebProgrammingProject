@@ -22,11 +22,9 @@ namespace EventStreamingPlatform.Controllers
 
         // GET: Actor
         
-        public async Task<IActionResult> Index(int page=1)
+        public async Task<IActionResult> Index(int pageNumber=1)
         {
-            var item = _context.Actor.AsNoTracking().OrderBy(p => p.Id);
-            var model = await PagingList.CreateAsync(item, 3, page);
-            return View(model);
+            return View(await PaginatedList<Actor>.CreateAsync(_context.Actor , pageNumber,3));
 
             //return View(await _context.Actor.ToListAsync());
         }
