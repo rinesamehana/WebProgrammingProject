@@ -4,6 +4,8 @@ using System.Diagnostics;
 
 namespace EventStreamingPlatform.Controllers
 {
+
+    [Area("Admin")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

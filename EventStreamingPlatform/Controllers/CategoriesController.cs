@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventStreamingPlatform.Data;
 using EventStreamingPlatform.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace EventStreamingPlatform.Controllers
 {
@@ -20,9 +21,15 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page=1)
         {
-              return View(await _context.Category.ToListAsync());
+
+            var item =  _context.Category.AsNoTracking().OrderBy(p => p.CategoryID);
+            var model = await PagingList<Category>.CreateAsync(item, 3, page);
+            return View(model);
+
+
+              //return View(await _context.Category.ToListAsync());
         }
 
         // GET: Categories/Details/5

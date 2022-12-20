@@ -1,4 +1,7 @@
-﻿@model IEnumerable<EventStreamingPlatform.Models.Category>
+﻿
+@model ReflectionIT.Mvc.Paging.PagingList<EventStreamingPlatform.Models.Category>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Index";
@@ -9,6 +12,11 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+   <nav>
+        @await this.Component.InvokeAsync("Pager", new {pagingList = this.Model})
+   </nav>
+
 <table class="table">
     <thead>
         <tr>
@@ -30,6 +38,10 @@
                 <a asp-action="Delete" asp-route-id="@item.CategoryID">Delete</a>
             </td>
         </tr>
+       
 }
     </tbody>
 </table>
+        <nav>
+           <vc:pager paging-list="@Model"/>
+       </nav>

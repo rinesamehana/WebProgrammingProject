@@ -1,6 +1,7 @@
 using EventStreamingPlatform.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ReflectionIT.Mvc.Paging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddPaging();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

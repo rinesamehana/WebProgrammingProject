@@ -1,10 +1,17 @@
-﻿@model IEnumerable<EventStreamingPlatform.Models.Company>
+﻿
+@model ReflectionIT.Mvc.Paging.PagingList<EventStreamingPlatform.Models.Company>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
+
+  <nav>
+        @await this.Component.InvokeAsync("Pager", new {pagingList = this.Model})
+   </nav>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -39,3 +46,8 @@
 }
     </tbody>
 </table>
+
+  <nav>
+           <vc:pager paging-list="@Model"/>
+       </nav>
+

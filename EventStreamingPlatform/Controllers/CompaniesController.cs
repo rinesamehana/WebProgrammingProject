@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using EventStreamingPlatform.Data;
 using EventStreamingPlatform.Models;
 using Microsoft.AspNetCore.Authorization;
+using ReflectionIT.Mvc.Paging;
 
 namespace EventStreamingPlatform.Controllers
 {
@@ -22,9 +23,13 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Companies
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page=1)
         {
-              return View(await _context.Company.ToListAsync());
+            var item = _context.Company.AsNoTracking().OrderBy(p => p.Id);
+            var model = await PagingList<Company>.CreateAsync(item, 3, page);
+            return View(model);
+
+            //return View(await _context.Company.ToListAsync());
         }
 
         // GET: Companies/Details/5
