@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventStreamingPlatform.Data;
 using EventStreamingPlatform.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EventStreamingPlatform.Controllers
 {
+  
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
