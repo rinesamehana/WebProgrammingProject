@@ -21,31 +21,66 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Actor
-        
-        public async Task<IActionResult> Index(string sortOrder, int pageNumber=1)
-        {
-            var actors = _context.Actor.AsQueryable();
-            ViewData["NameOrder"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["SurnameOrder"] = String.IsNullOrEmpty(sortOrder) ? "surname_desc" : "";
 
-            switch (sortOrder) 
+        public async Task<IActionResult> Index(
+             string sortOrder,
+             string currentFilter,
+             string searchString,
+             int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
+            ViewData["SurnameSortParam"] = sortOrder == "surname" ? "surnameDesc" : "surname";
+
+            if (searchString != null)
             {
-                case "name_desc":
+                pageNumber = 1;
+
+            }
+
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var actors = from a in _context.Actor select a;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                actors = actors.Where(a => a.Name.Contains(searchString) ||  a.Surname.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "nameDesc":
                     actors = actors.OrderByDescending(a => a.Name);
                     break;
 
-                case "surname_desc":
-                    actors = actors.OrderByDescending(a => a.Surname);
+                case "surname":
+                    actors= actors.OrderBy(a => a.Surname);
                     break;
 
+                case "surnameDesc":
+                    actors = actors.OrderByDescending(a => a.Surname);
+                    break;
 
                 default:
                     actors = actors.OrderBy(a => a.Name);
                     break;
             }
-            return View(await PaginatedList<Actor>.CreateAsync(actors.AsNoTracking(), pageNumber,3));
 
-            //return View(await _context.Actor.ToListAsync());
+            int pageSize = 3;
+            return View(await PaginatedList<Actor>.CreateAsync(actors.AsNoTracking(), pageNumber ?? 1, pageSize)); ;
+
+            // return View(await PaginatedList<Company>.CreateAsync(_context.Company, pageNumber, 3));
+
+            //var item = _context.Actor.AsNoTracking().OrderBy(p => p.Id);
+            //var model = await PagingList<Actor>.CreateAsync(item, 3, page);
+            //return View(model);
+
+
         }
 
         // GET: Actor/Details/5

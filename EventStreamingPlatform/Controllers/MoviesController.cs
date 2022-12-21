@@ -20,11 +20,76 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index(int pageNumber=1)
+        public async Task<IActionResult> Index(
+              string sortOrder,
+              string currentFilter,
+              string searchString,
+              int? pageNumber)
         {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["TitleSortParam"] = String.IsNullOrEmpty(sortOrder) ? "titleDesc" : "";
+            ViewData["DescriptionSortParam"] = sortOrder == "description" ? "descriptionDesc" : "description";
+            ViewData["CreatedDateSortParam"] = sortOrder == "createddate" ? "createdDesc" : "createddate";
 
-            return View(await PaginatedList<Movie>.CreateAsync(_context.Movie, pageNumber, 3));
-            //return View(await _context.Movie.ToListAsync());
+            if (searchString != null)
+            {
+                pageNumber = 1;
+
+            }
+
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var movies = from a in _context.Movie select a;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                movies = movies.Where(a => a.Title.Contains(searchString) || a.Description.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "titleDesc":
+                    movies = movies.OrderByDescending(a => a.Title);
+                    break;
+
+                case "description":
+                    movies = movies.OrderBy(a => a.Description);
+                    break;
+
+                case "descriptionDesc":
+                    movies = movies.OrderByDescending(a => a.Description);
+                    break;
+
+                case "createddate":
+                    movies = movies.OrderBy(a => a.CreatedDate);
+                    break;
+
+                case "createddateDesc":
+                    movies = movies.OrderByDescending(a => a.CreatedDate);
+                    break;
+
+
+
+                default:
+                    movies= movies.OrderBy(a => a.Title);
+                    break;
+            }
+
+            int pageSize = 3;
+            return View(await PaginatedList<Movie>.CreateAsync(movies.AsNoTracking(), pageNumber ?? 1, pageSize)); ;
+
+            // return View(await PaginatedList<Movie>.CreateAsync(_context.Company, pageNumber, 3));
+
+            //var item = _context.Movie.AsNoTracking().OrderBy(p => p.Id);
+            //var model = await PagingList<Movie>.CreateAsync(item, 3, page);
+            //return View(model);
+
+
         }
 
         // GET: Movies/Details/5

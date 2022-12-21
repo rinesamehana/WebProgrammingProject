@@ -21,40 +21,60 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index(string sortOrder, int pageNumber=1)
+        public async Task<IActionResult> Index(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
         {
-            //var categories = _context.Category.AsQueryable();
-            //ViewData["CategoryOrder"] = String.IsNullOrEmpty(sortOrder) ? "category_desc" : "";
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
+            
 
-            ViewBag.CategoryName = String.IsNullOrEmpty(sortOrder) ? "CategoryName" : "";
-            var categories = _context.Category.AsQueryable();
+            if (searchString != null)
+            {
+                pageNumber = 1;
+
+            }
+
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var categories = from a in _context.Category select a;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                categories = categories.Where(a => a.CategoryName.Contains(searchString));
+            }
 
             switch (sortOrder)
             {
-                case "category_desc":
+                case "nameDesc":
                     categories = categories.OrderByDescending(a => a.CategoryName);
                     break;
+
+                
 
                 default:
                     categories = categories.OrderBy(a => a.CategoryName);
                     break;
             }
-            return View(await PaginatedList<Category>.CreateAsync(categories.AsNoTracking(), pageNumber, 3));
 
+            int pageSize = 3;
+            return View(await PaginatedList<Category>.CreateAsync(categories.AsNoTracking(), pageNumber ?? 1, pageSize)); ;
 
+            // return View(await PaginatedList<Category>.CreateAsync(_context.Company, pageNumber, 3));
 
-
-
-            //return View(await PaginatedList<Category>.CreateAsync(_context.Category, pageNumber, 3));
-
-            //var item =  _context.Category.AsNoTracking().OrderBy(p => p.CategoryID);
+            //var item = _context.Category.AsNoTracking().OrderBy(p => p.Id);
             //var model = await PagingList<Category>.CreateAsync(item, 3, page);
             //return View(model);
 
 
-            //return View(await _context.Category.ToListAsync());
         }
-
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {

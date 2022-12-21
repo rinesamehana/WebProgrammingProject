@@ -45,11 +45,11 @@ namespace EventStreamingPlatform.Controllers
 
             ViewData["CurrentFilter"] = searchString; 
 
-            var companies = from c in _context.Company  select c;
+            var companies = from a in _context.Company  select a;
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                companies = companies.Where(c => c.Name.Contains(searchString));
+                companies = companies.Where(a => a.Name.Contains(searchString));
             }
 
             switch (sortOrder)
