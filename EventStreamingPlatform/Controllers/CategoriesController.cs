@@ -21,9 +21,31 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index(int pageNumber=1)
+        public async Task<IActionResult> Index(string sortOrder, int pageNumber=1)
         {
-            return View(await PaginatedList<Category>.CreateAsync(_context.Category, pageNumber, 3));
+            //var categories = _context.Category.AsQueryable();
+            //ViewData["CategoryOrder"] = String.IsNullOrEmpty(sortOrder) ? "category_desc" : "";
+
+            ViewBag.CategoryName = String.IsNullOrEmpty(sortOrder) ? "CategoryName" : "";
+            var categories = _context.Category.AsQueryable();
+
+            switch (sortOrder)
+            {
+                case "category_desc":
+                    categories = categories.OrderByDescending(a => a.CategoryName);
+                    break;
+
+                default:
+                    categories = categories.OrderBy(a => a.CategoryName);
+                    break;
+            }
+            return View(await PaginatedList<Category>.CreateAsync(categories.AsNoTracking(), pageNumber, 3));
+
+
+
+
+
+            //return View(await PaginatedList<Category>.CreateAsync(_context.Category, pageNumber, 3));
 
             //var item =  _context.Category.AsNoTracking().OrderBy(p => p.CategoryID);
             //var model = await PagingList<Category>.CreateAsync(item, 3, page);

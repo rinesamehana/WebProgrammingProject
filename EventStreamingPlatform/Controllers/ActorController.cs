@@ -22,9 +22,28 @@ namespace EventStreamingPlatform.Controllers
 
         // GET: Actor
         
-        public async Task<IActionResult> Index(int pageNumber=1)
+        public async Task<IActionResult> Index(string sortOrder, int pageNumber=1)
         {
-            return View(await PaginatedList<Actor>.CreateAsync(_context.Actor , pageNumber,3));
+            var actors = _context.Actor.AsQueryable();
+            ViewData["NameOrder"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["SurnameOrder"] = String.IsNullOrEmpty(sortOrder) ? "surname_desc" : "";
+
+            switch (sortOrder) 
+            {
+                case "name_desc":
+                    actors = actors.OrderByDescending(a => a.Name);
+                    break;
+
+                case "surname_desc":
+                    actors = actors.OrderByDescending(a => a.Surname);
+                    break;
+
+
+                default:
+                    actors = actors.OrderBy(a => a.Name);
+                    break;
+            }
+            return View(await PaginatedList<Actor>.CreateAsync(actors.AsNoTracking(), pageNumber,3));
 
             //return View(await _context.Actor.ToListAsync());
         }
