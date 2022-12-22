@@ -21,18 +21,60 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index(int pageNumber=1)
+        public async Task<IActionResult> Index(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
         {
-            return View(await PaginatedList<Category>.CreateAsync(_context.Categories, pageNumber, 3));
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
 
-            //var item =  _context.Category.AsNoTracking().OrderBy(p => p.CategoryID);
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+
+            }
+
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var categories = from a in _context.Categories select a;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                categories = categories.Where(a => a.CategoryName.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "nameDesc":
+                    categories = categories.OrderByDescending(a => a.CategoryName);
+                    break;
+
+
+
+                default:
+                    categories = categories.OrderBy(a => a.CategoryName);
+                    break;
+            }
+
+            int pageSize = 3;
+            return View(await PaginatedList<Category>.CreateAsync(categories.AsNoTracking(), pageNumber ?? 1, pageSize)); ;
+
+            // return View(await PaginatedList<Category>.CreateAsync(_context.Company, pageNumber, 3));
+
+            //var item = _context.Category.AsNoTracking().OrderBy(p => p.Id);
             //var model = await PagingList<Category>.CreateAsync(item, 3, page);
             //return View(model);
 
 
-            //return View(await _context.Category.ToListAsync());
         }
-
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -156,14 +198,14 @@ namespace EventStreamingPlatform.Controllers
             {
                 _context.Categories.Remove(category);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return _context.Categories.Any(e => e.CategoryID == id);
+            return _context.Categories.Any(e => e.CategoryID == id);
         }
     }
 }

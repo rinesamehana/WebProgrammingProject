@@ -21,13 +21,66 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Actor
-        
-        public async Task<IActionResult> Index(int pageNumber=1)
-        {
-       
-            return View(await PaginatedList<Actor>.CreateAsync(_context.Actors , pageNumber,3));
 
-            //return View(await _context.Actor.ToListAsync());
+        public async Task<IActionResult> Index(
+             string sortOrder,
+             string currentFilter,
+             string searchString,
+             int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
+            ViewData["SurnameSortParam"] = sortOrder == "surname" ? "surnameDesc" : "surname";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+
+            }
+
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var actors = from a in _context.Actors select a;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                actors = actors.Where(a => a.Name.Contains(searchString) || a.Surname.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "nameDesc":
+                    actors = actors.OrderByDescending(a => a.Name);
+                    break;
+
+                case "surname":
+                    actors = actors.OrderBy(a => a.Surname);
+                    break;
+
+                case "surnameDesc":
+                    actors = actors.OrderByDescending(a => a.Surname);
+                    break;
+
+                default:
+                    actors = actors.OrderBy(a => a.Name);
+                    break;
+            }
+
+            int pageSize = 3;
+            return View(await PaginatedList<Actor>.CreateAsync(actors.AsNoTracking(), pageNumber ?? 1, pageSize)); ;
+
+            // return View(await PaginatedList<Company>.CreateAsync(_context.Company, pageNumber, 3));
+
+            //var item = _context.Actor.AsNoTracking().OrderBy(p => p.Id);
+            //var model = await PagingList<Actor>.CreateAsync(item, 3, page);
+            //return View(model);
+
+
         }
 
         // GET: Actor/Details/5
@@ -153,14 +206,14 @@ namespace EventStreamingPlatform.Controllers
             {
                 _context.Actors.Remove(actor);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ActorExists(int id)
         {
-          return _context.Actors.Any(e => e.Id == id);
+            return _context.Actors.Any(e => e.Id == id);
         }
     }
 }

@@ -12,7 +12,7 @@ using ReflectionIT.Mvc.Paging;
 
 namespace EventStreamingPlatform.Controllers
 {
-  
+
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,15 +23,65 @@ namespace EventStreamingPlatform.Controllers
         }
 
         // GET: Companies
-        public async Task<IActionResult> Index(int pageNumber=1)
+        public async Task<IActionResult> Index(
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            int? pageNumber)
         {
-            return View(await PaginatedList<Company>.CreateAsync(_context.Companies, pageNumber, 3));
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "nameDesc" : "";
+            ViewData["FoundedSortParam"] = sortOrder == "founded" ? "foundedDesc" : "founded";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+
+            }
+
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var companies = from a in _context.Companies select a;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                companies = companies.Where(a => a.Name.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "nameDesc":
+                    companies = companies.OrderByDescending(a => a.Name);
+                    break;
+
+                case "founded":
+                    companies = companies.OrderBy(a => a.Founded);
+                    break;
+
+                case "foundedDesc":
+                    companies = companies.OrderByDescending(a => a.Founded);
+                    break;
+
+                default:
+                    companies = companies.OrderBy(a => a.Name);
+                    break;
+            }
+
+            int pageSize = 3;
+            return View(await PaginatedList<Company>.CreateAsync(companies.AsNoTracking(), pageNumber ?? 1, pageSize)); ;
+
+            // return View(await PaginatedList<Company>.CreateAsync(_context.Company, pageNumber, 3));
 
             //var item = _context.Company.AsNoTracking().OrderBy(p => p.Id);
             //var model = await PagingList<Company>.CreateAsync(item, 3, page);
             //return View(model);
 
-            //return View(await _context.Company.ToListAsync());
+
         }
 
         // GET: Companies/Details/5
@@ -157,14 +207,14 @@ namespace EventStreamingPlatform.Controllers
             {
                 _context.Companies.Remove(company);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CompanyExists(int id)
         {
-          return _context.Companies.Any(e => e.Id == id);
+            return _context.Companies.Any(e => e.Id == id);
         }
     }
 }
