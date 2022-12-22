@@ -25,7 +25,7 @@ namespace EventStreamingPlatform.Controllers
         // GET: Companies
         public async Task<IActionResult> Index(int pageNumber=1)
         {
-            return View(await PaginatedList<Company>.CreateAsync(_context.Company, pageNumber, 3));
+            return View(await PaginatedList<Company>.CreateAsync(_context.Companies, pageNumber, 3));
 
             //var item = _context.Company.AsNoTracking().OrderBy(p => p.Id);
             //var model = await PagingList<Company>.CreateAsync(item, 3, page);
@@ -37,12 +37,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Companies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Company == null)
+            if (id == null || _context.Companies == null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Company
+            var company = await _context.Companies
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
             {
@@ -77,12 +77,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Companies/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Company == null)
+            if (id == null || _context.Companies == null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Company.FindAsync(id);
+            var company = await _context.Companies.FindAsync(id);
             if (company == null)
             {
                 return NotFound();
@@ -128,12 +128,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Companies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Company == null)
+            if (id == null || _context.Companies == null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Company
+            var company = await _context.Companies
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
             {
@@ -148,14 +148,14 @@ namespace EventStreamingPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Company == null)
+            if (_context.Companies == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Company'  is null.");
             }
-            var company = await _context.Company.FindAsync(id);
+            var company = await _context.Companies.FindAsync(id);
             if (company != null)
             {
-                _context.Company.Remove(company);
+                _context.Companies.Remove(company);
             }
             
             await _context.SaveChangesAsync();
@@ -164,7 +164,7 @@ namespace EventStreamingPlatform.Controllers
 
         private bool CompanyExists(int id)
         {
-          return _context.Company.Any(e => e.Id == id);
+          return _context.Companies.Any(e => e.Id == id);
         }
     }
 }

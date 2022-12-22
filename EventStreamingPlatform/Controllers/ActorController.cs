@@ -24,7 +24,8 @@ namespace EventStreamingPlatform.Controllers
         
         public async Task<IActionResult> Index(int pageNumber=1)
         {
-            return View(await PaginatedList<Actor>.CreateAsync(_context.Actor , pageNumber,3));
+       
+            return View(await PaginatedList<Actor>.CreateAsync(_context.Actors , pageNumber,3));
 
             //return View(await _context.Actor.ToListAsync());
         }
@@ -32,12 +33,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Actor/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Actor == null)
+            if (id == null || _context.Actors == null)
             {
                 return NotFound();
             }
 
-            var actor = await _context.Actor
+            var actor = await _context.Actors
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (actor == null)
             {
@@ -72,12 +73,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Actor/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Actor == null)
+            if (id == null || _context.Actors == null)
             {
                 return NotFound();
             }
 
-            var actor = await _context.Actor.FindAsync(id);
+            var actor = await _context.Actors.FindAsync(id);
             if (actor == null)
             {
                 return NotFound();
@@ -123,12 +124,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Actor/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Actor == null)
+            if (id == null || _context.Actors == null)
             {
                 return NotFound();
             }
 
-            var actor = await _context.Actor
+            var actor = await _context.Actors
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (actor == null)
             {
@@ -143,14 +144,14 @@ namespace EventStreamingPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Actor == null)
+            if (_context.Actors == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Actor'  is null.");
             }
-            var actor = await _context.Actor.FindAsync(id);
+            var actor = await _context.Actors.FindAsync(id);
             if (actor != null)
             {
-                _context.Actor.Remove(actor);
+                _context.Actors.Remove(actor);
             }
             
             await _context.SaveChangesAsync();
@@ -159,7 +160,7 @@ namespace EventStreamingPlatform.Controllers
 
         private bool ActorExists(int id)
         {
-          return _context.Actor.Any(e => e.Id == id);
+          return _context.Actors.Any(e => e.Id == id);
         }
     }
 }

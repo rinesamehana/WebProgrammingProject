@@ -23,7 +23,7 @@ namespace EventStreamingPlatform.Controllers
         // GET: Categories
         public async Task<IActionResult> Index(int pageNumber=1)
         {
-            return View(await PaginatedList<Category>.CreateAsync(_context.Category, pageNumber, 3));
+            return View(await PaginatedList<Category>.CreateAsync(_context.Categories, pageNumber, 3));
 
             //var item =  _context.Category.AsNoTracking().OrderBy(p => p.CategoryID);
             //var model = await PagingList<Category>.CreateAsync(item, 3, page);
@@ -36,12 +36,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Category == null)
+            if (id == null || _context.Categories == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Category
+            var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.CategoryID == id);
             if (category == null)
             {
@@ -76,12 +76,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Category == null)
+            if (id == null || _context.Categories == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Category.FindAsync(id);
+            var category = await _context.Categories.FindAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -127,12 +127,12 @@ namespace EventStreamingPlatform.Controllers
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Category == null)
+            if (id == null || _context.Categories == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Category
+            var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.CategoryID == id);
             if (category == null)
             {
@@ -147,14 +147,14 @@ namespace EventStreamingPlatform.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Category == null)
+            if (_context.Categories == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Category'  is null.");
             }
-            var category = await _context.Category.FindAsync(id);
+            var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
-                _context.Category.Remove(category);
+                _context.Categories.Remove(category);
             }
             
             await _context.SaveChangesAsync();
@@ -163,7 +163,7 @@ namespace EventStreamingPlatform.Controllers
 
         private bool CategoryExists(int id)
         {
-          return _context.Category.Any(e => e.CategoryID == id);
+          return _context.Categories.Any(e => e.CategoryID == id);
         }
     }
 }
